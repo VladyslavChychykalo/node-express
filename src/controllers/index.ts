@@ -5,7 +5,7 @@ import users from '../db';
 
 export default class Controllers {
   static getAllUsers(req: Request, res: Response) {
-    res.status(201).send(users);
+    res.status(201).json(users);
   }
 
   // getUser
@@ -18,7 +18,7 @@ export default class Controllers {
       throw err;
     }
 
-    res.send(requestedUser);
+    res.json(requestedUser);
   }
 
   // createUser
@@ -26,6 +26,7 @@ export default class Controllers {
   static validateCreateUser(req: Request, res: Response, next: NextFunction) {
     const userSchema = Joi.object({
       name: Joi.string().required(),
+      surname: Joi.string().required(),
     });
     const result = userSchema.validate(req.body);
     if (result.error) {
@@ -41,15 +42,19 @@ export default class Controllers {
       id,
     };
 
-    users.push(newUser);
+    // console.log('asdfasdf');
+    users.unshift(newUser);
     res.status(201).send(newUser);
   }
 
   // upadteUser
   static validateUpdateUser(req: Request, res: Response, next: NextFunction) {
     const userSchema = Joi.object({
+      id: Joi.string(),
       name: Joi.string(),
+      surname: Joi.string(),
     });
+
     const result = userSchema.validate(req.body);
     if (result.error) {
       res.status(400).send(result.error);
@@ -60,6 +65,8 @@ export default class Controllers {
   static updateUser(req: Request, res: Response) {
     const { id } = req.params;
     const userIndex = users.findIndex((user) => user.id === id);
+
+    console.log(req.body);
 
     users[userIndex] = {
       ...users[userIndex],
